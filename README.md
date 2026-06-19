@@ -1,2 +1,1 @@
-Glib - client, 
-Microsoft Update Service - server
+Beta test!
